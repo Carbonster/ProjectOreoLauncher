@@ -1,0 +1,41 @@
+Project Oreo Launcher
+
+You may view, study, and use this project as intended, including using its official releases,
+APIs, or integration points in your own mods where applicable. Private modifications for
+personal use, testing, or research are allowed, but you may not publicly distribute, publish,
+maintain, rebrand, or release modified versions or derivative works of this project without the
+author's permission.
+
+A mod that uses this project's public API or integration points is not a derivative work for
+the purposes of this licence.
+
+If this project has received no public update for twelve months, permission to publish
+maintained forks is granted automatically.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+---
+
+This product bundles third-party components, each under its own licence.
+
+In the source repository:
+
+  Microsoft Edge WebView2 SDK    third_party/webview2/LICENSE.txt
+                                 third_party/webview2/NOTICE.txt
+
+In the released package, additionally:
+
+  Python (CPython)               ProjectOreo/python/LICENSE.txt
+    Python Software Foundation License Version 2. The release ships a complete private Python
+    interpreter - by size, most of the download. The build comes from astral-sh's
+    python-build-standalone and carries the usual CPython dependencies with it, including
+    OpenSSL, SQLite, libffi, bzip2, XZ and zlib. Every one of those licences is reproduced in
+    the LICENSE.txt above, which travels inside the package.
+
+Project Oreo Launcher also installs pyMHF and NMSpy from PyPI, and Project Oreo Runtime from
+its own GitHub releases. Those are separate projects under their own licences and no part of
+them is included here.

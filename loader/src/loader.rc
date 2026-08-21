@@ -1,0 +1,33 @@
+// Version resource of the proxy version.dll.
+// LoaderService reads ProductName to tell OUR version.dll apart from one belonging to another
+// mod, and FileVersion to know which ProjectOreo build is installed in the game folder.
+#include <windows.h>
+#include "oreo_version.h"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION PROJECTOREO_VERSION_COMMA
+PRODUCTVERSION PROJECTOREO_VERSION_COMMA
+FILEFLAGSMASK 0x3fL
+FILEFLAGS 0x0L
+FILEOS VOS_NT_WINDOWS32
+FILETYPE VFT_DLL
+FILESUBTYPE VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "ProjectOreo"
+            VALUE "FileDescription", "ProjectOreo Loader (proxy version.dll)"
+            VALUE "FileVersion", PROJECTOREO_VERSION
+            VALUE "InternalName", "ProjectOreoLoader"
+            VALUE "OriginalFilename", "version.dll"
+            VALUE "ProductName", "ProjectOreo Loader"
+            VALUE "ProductVersion", PROJECTOREO_VERSION
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

@@ -1,0 +1,21 @@
+; Export table of the proxy version.dll.
+; Every name the real version.dll publishes is exported here and mapped to our forwarding
+; wrapper, so any program that loads this dll (the game included) sees the same API.
+LIBRARY version
+EXPORTS
+    GetFileVersionInfoA=proxy_GetFileVersionInfoA
+    GetFileVersionInfoW=proxy_GetFileVersionInfoW
+    GetFileVersionInfoExA=proxy_GetFileVersionInfoExA
+    GetFileVersionInfoExW=proxy_GetFileVersionInfoExW
+    GetFileVersionInfoSizeA=proxy_GetFileVersionInfoSizeA
+    GetFileVersionInfoSizeW=proxy_GetFileVersionInfoSizeW
+    GetFileVersionInfoSizeExA=proxy_GetFileVersionInfoSizeExA
+    GetFileVersionInfoSizeExW=proxy_GetFileVersionInfoSizeExW
+    VerFindFileA=proxy_VerFindFileA
+    VerFindFileW=proxy_VerFindFileW
+    VerInstallFileA=proxy_VerInstallFileA
+    VerInstallFileW=proxy_VerInstallFileW
+    VerLanguageNameA=proxy_VerLanguageNameA
+    VerLanguageNameW=proxy_VerLanguageNameW
+    VerQueryValueA=proxy_VerQueryValueA
+    VerQueryValueW=proxy_VerQueryValueW

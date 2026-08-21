@@ -1,0 +1,34 @@
+// Version resource + manifest settings of the launcher executable.
+#include <windows.h>
+#include "oreo_version.h"
+
+// Icon id 1: the lowest numbered icon resource is what Explorer and the taskbar show.
+1 ICON "../assets/icon.ico"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION PROJECTOREO_VERSION_COMMA
+PRODUCTVERSION PROJECTOREO_VERSION_COMMA
+FILEFLAGSMASK 0x3fL
+FILEFLAGS 0x0L
+FILEOS VOS_NT_WINDOWS32
+FILETYPE VFT_APP
+FILESUBTYPE VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "ProjectOreo"
+            VALUE "FileDescription", "ProjectOreo Launcher"
+            VALUE "FileVersion", PROJECTOREO_VERSION
+            VALUE "InternalName", "ProjectOreoLauncher"
+            VALUE "OriginalFilename", "ProjectOreoLauncher.exe"
+            VALUE "ProductName", "ProjectOreo Launcher"
+            VALUE "ProductVersion", PROJECTOREO_VERSION
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

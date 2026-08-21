@@ -1,0 +1,12 @@
+{
+  "_comment": "Read by Project Oreo Launcher to decide whether it can update itself. Update this file as part of publishing a release - see docs/RELEASING.md. The zip is the full package a player installs by hand: version.dll plus a ProjectOreo folder.",
+  "schema_version": 1,
+  "version": "0.1.16",
+  "asset": {
+    "file": "ProjectOreoLauncher-0.1.16.zip",
+    "url": "https://github.com/Carbonster/ProjectOreoLauncher/releases/download/v0.1.16/ProjectOreoLauncher-0.1.16.zip",
+    "size": 32710925,
+    "sha256": "f76f66b783e1abcaa0b46c0596a45070567d936335617a7372f92329f14a73e0"
+  },
+  "notes_url": "https://github.com/Carbonster/ProjectOreoLauncher/releases/tag/v0.1.16"
+}
