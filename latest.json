@@ -1,12 +1,12 @@
 {
   "_comment": "Read by Oreo Launcher to decide whether it can update itself. Update this file as part of publishing a release - see docs/RELEASING.md. The zip is the full package a player installs by hand: version.dll plus an OreoLauncher folder.",
   "schema_version": 1,
-  "version": "0.2.0",
+  "version": "0.2.2",
   "asset": {
-    "file": "OreoLauncher-0.2.1.zip",
-    "url": "https://github.com/Carbonster/ProjectOreoLauncher/releases/download/v0.2.1/OreoLauncher-0.2.1.zip",
-    "size": 32827121,
-    "sha256": "21c6149d24f41d264f04da45800a81d03deb72ec09e49a677485f7d333bb82fa"
+    "file": "OreoLauncher-0.2.2.zip",
+    "url": "https://github.com/Carbonster/ProjectOreoLauncher/releases/download/v0.2.2/OreoLauncher-0.2.2.zip",
+    "size": 32827111,
+    "sha256": "ba3b5ba184a23c303409c3f0e69af5a17384211f1fec210ae98eb3e77027eaea"
   },
-  "notes_url": "https://github.com/Carbonster/ProjectOreoLauncher/releases/tag/v0.2.1"
+  "notes_url": "https://github.com/Carbonster/ProjectOreoLauncher/releases/tag/v0.2.2"
 }

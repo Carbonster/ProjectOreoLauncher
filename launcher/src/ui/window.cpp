@@ -202,6 +202,7 @@ HWND create_window(const App& app) {
     // Asks WM_NCCALCSIZE again, so the frame is gone before the window is first shown.
     SetWindowPos(hwnd, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
     ShowWindow(hwnd, SW_SHOWNORMAL);
+    ShowWindow(hwnd, SW_SHOWNORMAL);
     UpdateWindow(hwnd);
     return hwnd;
 }
