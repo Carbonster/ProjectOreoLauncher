@@ -1,4 +1,4 @@
-#include "core/approved_catalog.h"
+#include "updates/approved_catalog.h"
 
 #include <cassert>
 #include <set>

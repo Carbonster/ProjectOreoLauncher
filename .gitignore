@@ -17,4 +17,4 @@ cache.ini
 *.nupkg
 !third_party/webview2/build/native/x64/WebView2LoaderStatic.lib
 
-ProjectOreoLauncher.exe.WebView2/
+OreoLauncher.exe.WebView2/

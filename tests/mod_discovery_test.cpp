@@ -4,8 +4,9 @@
 #include <iostream>
 #include <string>
 
-#include "core/mod_discovery.h"
-#include "core/util.h"
+#include "mods/mod_discovery.h"
+#include "system/text.h"
+#include "system/files.h"
 
 namespace fs = std::filesystem;
 
@@ -32,7 +33,7 @@ int main() {
     fs::path loose = mods / L"LooseMod";
     fs::path empty_mod = mods / L"EmptyMod";
     fs::path settings = game / L"Binaries" / L"SETTINGS" / L"GCMODSETTINGS.MXML";
-    fs::path states = root / L"ProjectOreo" / L"mod_states.ini";
+    fs::path states = root / L"OreoLauncher" / L"mod_states.ini";
 
     oreo::write_file(oreo::to_utf8((loose / L"METADATA" / L"TEST.EXML").wstring()), "<Data />");
     oreo::write_file(oreo::to_utf8((loose / L"projectoreo.ini").wstring()),
@@ -101,8 +102,46 @@ int main() {
     ok &= expect(state_text.find("pythonmod=0") != std::string::npos,
                  "Python state was not saved");
     oreo::read_file(oreo::to_utf8(settings.wstring()), xml);
-    ok &= expect(oreo::to_lower(xml).find("value=\"pythonmod\"") != std::string::npos,
-                 "missing game settings entry was not created");
+    ok &= expect(oreo::to_lower(xml).find("value=\"pythonmod\"") == std::string::npos,
+                 "a python mod's switch must not be written into the game's mod settings");
+
+    discovery.scan(oreo::to_utf8(mods.wstring()), oreo::to_utf8(states.wstring()));
+    bool python_off = false;
+    for (const oreo::ModInfo& mod : discovery.mods())
+        if (mod.folder == "PythonMod") python_off = !mod.enabled;
+    ok &= expect(python_off, "the launcher's python switch was not read back");
+
+    // The game's "disable all mods" is about its file mods. It must not switch python mods off.
+    oreo::write_file(oreo::to_utf8(states.wstring()), "[Mods]\r\npythonmod=1\r\n");
+    oreo::read_file(oreo::to_utf8(settings.wstring()), xml);
+    size_t all = xml.find("\"DisableAllMods\" value=\"false\"");
+    if (all != std::string::npos) xml.replace(all, 30, "\"DisableAllMods\" value=\"true\"");
+    oreo::write_file(oreo::to_utf8(settings.wstring()), xml);
+    discovery.scan(oreo::to_utf8(mods.wstring()), oreo::to_utf8(states.wstring()));
+    bool python_on = false, loose_on = true;
+    for (const oreo::ModInfo& mod : discovery.mods()) {
+        if (mod.folder == "PythonMod") python_on = mod.enabled;
+        if (mod.folder == "LooseMod") loose_on = mod.enabled;
+    }
+    ok &= expect(python_on, "the game's DisableAllMods switched a python mod off");
+    ok &= expect(!loose_on, "the game's DisableAllMods no longer switches its file mods off");
+
+    // PLAY WITHOUT MODS flips only that one switch, and says what it was, so it can be put back.
+    {
+        std::string error;
+        bool was = false;
+        ok &= expect(discovery.set_all_game_mods_disabled(oreo::to_utf8(mods.wstring()), false, &was, error),
+                     error.c_str());
+        ok &= expect(was, "the previous DisableAllMods=true was not reported");
+        ok &= expect(discovery.set_all_game_mods_disabled(oreo::to_utf8(mods.wstring()), true, &was, error),
+                     error.c_str());
+        ok &= expect(!was, "the previous DisableAllMods=false was not reported");
+        oreo::read_file(oreo::to_utf8(settings.wstring()), xml);
+        ok &= expect(xml.find("\"DisableAllMods\" value=\"true\"") != std::string::npos,
+                     "DisableAllMods was not switched on");
+        ok &= expect(xml.find("name=\"Enabled\" value=\"false\"") != std::string::npos,
+                     "a mod's own Enabled flag must be left alone");
+    }
 
     // Needing Project Oreo Runtime is something a mod says, not something assumed of every
     // Python mod. Most of them only change game logic and never draw an overlay or read a
@@ -110,6 +149,36 @@ int main() {
     // requirement put in its name.
     ok &= expect(found_python && !found_python->needs_runtime(),
                  "a mod without a manifest must not be treated as needing the Runtime");
+
+    {
+        const std::string mods_u8 = oreo::to_utf8(mods.wstring());
+        const fs::path backups = root / L"OreoLauncher" / L"backups" / L"game_settings";
+        discovery.set_backup_dir(oreo::to_utf8(backups.wstring()));
+        std::string before, error;
+        oreo::read_file(oreo::to_utf8(settings.wstring()), before);
+        ok &= expect(discovery.set_all_game_mods_disabled(mods_u8, false, nullptr, error), error.c_str());
+        std::string first, previous;
+        oreo::read_file(oreo::to_utf8((backups / L"GCMODSETTINGS.first.MXML").wstring()), first);
+        oreo::read_file(oreo::to_utf8((backups / L"GCMODSETTINGS.previous.MXML").wstring()), previous);
+        ok &= expect(!first.empty() && first == before, "the game's settings were not copied before a change");
+        ok &= expect(previous == before, "the settings before the latest change were not kept");
+        ok &= expect(!fs::exists(settings.wstring() + L".oreo-new"), "a temporary file was left beside the settings");
+
+        oreo::read_file(oreo::to_utf8(settings.wstring()), before);
+        HANDLE held = CreateFileW(settings.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, nullptr);
+        ok &= expect(!discovery.set_all_game_mods_disabled(mods_u8, true, nullptr, error),
+                     "settings that could not be read were written anyway");
+        CloseHandle(held);
+        std::string after;
+        oreo::read_file(oreo::to_utf8(settings.wstring()), after);
+        ok &= expect(after == before, "settings that could not be read were replaced");
+
+        fs::path elsewhere = root / L"MyMods";
+        fs::create_directories(elsewhere);
+        ok &= expect(!discovery.set_all_game_mods_disabled(oreo::to_utf8(elsewhere.wstring()), true, nullptr, error),
+                     "a MODS folder outside the game was treated as the game's");
+        ok &= expect(!fs::exists(root / L"Binaries"), "settings were written beside a MODS folder set elsewhere");
+    }
 
     fs::path overlay_mod = mods / L"OverlayMod";
     oreo::write_file(oreo::to_utf8((overlay_mod / L"main.py").wstring()),

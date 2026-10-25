@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "core/launch_service.h"
-#include "core/state.h"
+#include "game/launch_service.h"
+#include "model/state.h"
 
 namespace {
 
@@ -53,7 +53,7 @@ oreo::ModInfo unpacked_mod(const std::string& name) {
 }
 
 const char* kModsDir = "C:\\Game\\GAMEDATA\\MODS";
-const char* kLogDir = "C:\\Game\\Binaries\\ProjectOreo\\logs";
+const char* kLogDir = "C:\\Game\\Binaries\\OreoLauncher\\logs";
 
 // Two enabled python mods have to end up in ONE run: pyMHF injects a single python runtime per
 // game process, so a second launch would be a second runtime inside the same game.
@@ -155,33 +155,35 @@ void non_python_mods_are_counted_not_run() {
     expect(!has_name(plan.mod_names, "NoFreePillars"), "an unpacked mod is not run by NMSpy");
 }
 
-// The game's mod menu switch governs the game's own file mods, not python ones - and NMSpy has
-// no per-mod switch at all, it loads the whole folder. So a python mod marked off in the game
-// still runs, and the plan says so rather than pretending it was skipped.
-void a_game_disabled_python_mod_still_runs() {
+// A python mod switched off in the launcher is left out of the run. NMSpy still scans the whole
+// folder, so the plan carries the mod's folder for the bootstrap to turn into pyMHF's
+// `disabled_mods`.
+void a_switched_off_python_mod_is_left_out() {
     std::vector<oreo::ModInfo> mods{python_mod("Fishing Minigame", true),
                                     python_mod("Teleporter Cost", false)};
     oreo::NmspyLaunchPlan plan = oreo::LaunchService::build_plan(mods, kModsDir, kLogDir, 0, false);
 
-    expect(plan.mod_names.size() == 2,
-           "NMSpy loads every python mod in the folder, so both belong to the run");
-    expect(has_name(plan.mod_names, "Teleporter Cost"),
-           "a mod switched off in the game's mod menu is still loaded by NMSpy");
-    expect(plan.game_disabled.size() == 1 && has_name(plan.game_disabled, "Teleporter Cost"),
-           "the plan should record which mods the game has switched off");
-    expect(!has_name(plan.game_disabled, "Fishing Minigame"),
-           "an enabled mod must not be reported as switched off");
+    expect(plan.valid, "a plan with one mod switched on should be valid");
+    expect(plan.mod_names.size() == 1 && has_name(plan.mod_names, "Fishing Minigame"),
+           "only the mod that is switched on belongs to the run");
+    expect(plan.disabled.size() == 1 && has_name(plan.disabled, "Teleporter Cost"),
+           "the plan should record which mod is switched off");
+    expect(plan.disabled_dirs.size() == 1 &&
+               plan.disabled_dirs[0] == "C:\\Game\\GAMEDATA\\MODS\\Teleporter Cost",
+           "the switched off mod's folder is what the bootstrap reads its classes from");
+    expect(contains(plan.script, "PROJECTOREO_DISABLED_MOD_DIRS") &&
+               contains(plan.script, "disabled_mods"),
+           "the bootstrap should turn the switched off folders into pyMHF's disabled_mods");
 }
 
-// Every python mod is switched off in the game menu: they still run, because that switch is
-// about the game's file mods. Otherwise PLAY would silently do nothing with no way to fix it.
-void all_game_disabled_still_produces_a_run() {
+// Every python mod switched off: there is nothing for NMSpy to run, so PLAY starts the game plain.
+void all_switched_off_produces_no_run() {
     std::vector<oreo::ModInfo> mods{python_mod("Fishing Minigame", false),
                                     python_mod("Teleporter Cost", false)};
     oreo::NmspyLaunchPlan plan = oreo::LaunchService::build_plan(mods, kModsDir, kLogDir, 0, false);
 
-    expect(plan.valid, "the run should still be valid");
-    expect(plan.mod_names.size() == 2, "both mods should still be part of the run");
+    expect(plan.mod_names.empty(), "no mod should be part of the run");
+    expect(plan.disabled.size() == 2, "both mods should be recorded as switched off");
 }
 
 // No mod to run at all is not a launch: PLAY falls back to starting the game plain.
@@ -215,7 +217,7 @@ void pymhf_logs_land_in_our_own_folder() {
 
     expect(contains(plan.config_json, "log_dir"),
            "the config should tell pyMHF where to put its log");
-    expect(contains(plan.config_json, "ProjectOreo"),
+    expect(contains(plan.config_json, "OreoLauncher"),
            "the log folder handed to pyMHF should be ours, not the game's");
     expect(!contains(plan.config_json, "EXE_DIR"),
            "the {EXE_DIR} default points at the game folder and must not survive");
@@ -238,8 +240,8 @@ int main() {
     interactive_console_is_always_off();
     developer_windows_follow_debug_hotkeys();
     non_python_mods_are_counted_not_run();
-    a_game_disabled_python_mod_still_runs();
-    all_game_disabled_still_produces_a_run();
+    a_switched_off_python_mod_is_left_out();
+    all_switched_off_produces_no_run();
     no_runnable_mods_produces_no_run();
     bootstrap_reads_its_config_from_the_environment();
     pymhf_logs_land_in_our_own_folder();

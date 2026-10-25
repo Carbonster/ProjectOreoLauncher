@@ -1,0 +1,128 @@
+/*FONT_FACE*/
+  * { box-sizing:border-box; }
+  html { color-scheme: dark; }
+  html, body { height:100%; margin:0; overflow:hidden; }
+
+  /* ===================================================================================
+     The main window. Laid out on a fixed 1568 x 906 stage, exactly as the design has it,
+     and the stage is then scaled as a whole to the window: nothing on it ever moves
+     relative to anything else. Two themes - dark (light on black, the default) and light
+     (dark on paper). Every colour the stage uses is one of these variables.
+     =================================================================================== */
+  body {
+    --m-font:'Century Gothic','Montserrat','URW Gothic',sans-serif;
+    --m-bg:#0b0b0b; --m-ink:#f2f2f2; --m-shape:#3f4d57; --m-shape-a:1; --m-focus:#eee;
+    /* buttons, and what anything under the pointer turns into */
+    --m-btn:#ebebeb; --m-btn-ink:#000; --m-hot:#bf0c3d; --m-hot-ink:#fff;
+    /* mod cards */
+    --m-card:rgba(255,255,255,0.15); --m-card-inner:rgba(255,255,255,0.1); --m-card-ink:#f2f2f2;
+    --m-meta:rgba(255,255,255,0.5); --m-meta-hot:rgba(255,255,255,0.7);
+    /* the small slanted buttons sitting in cut-outs: PLAY WITHOUT MODS, a card's SETTINGS */
+    --m-tab:#1b1b1b; --m-tab-ink:#f2f2f2;
+    --m-inst:#ececec; --m-inst-ink:#000; --m-inst-ring:#fff;
+    /* the ON/OFF switch: as it rests, inside a lit card, and under the pointer */
+    --m-trk:rgba(255,255,255,0.12); --m-trk-ring:rgba(255,255,255,0.5); --m-knob:#8a8a8a; --m-off-ink:#ddd;
+    --m-trk-on:#ececec; --m-trk-on-ring:#fff; --m-knob-on:#111; --m-on-ink:#000;
+    --m-lit-trk:#1c1c1c; --m-lit-trk-ring:rgba(255,255,255,0.5); --m-lit-knob:#8a8a8a; --m-lit-off-ink:#ddd;
+    --m-lit-trk-on:#111; --m-lit-trk-on-ring:#000; --m-lit-knob-on:#f2f2f2; --m-lit-on-ink:#fff;
+    --m-hot-knob:#f2f2f2; --m-hot-knob-on:#f2f2f2;
+    background:var(--m-bg); color:var(--text);
+    font:15px "Segoe UI",system-ui,sans-serif; user-select:none;
+  }
+  body.light {
+    --m-bg:#ece6d8; --m-ink:#151515; --m-shape:#b85b3e; --m-shape-a:1; --m-focus:#111;
+    --m-btn:#141414; --m-btn-ink:#fff; --m-hot:#ffc43c; --m-hot-ink:#000;
+    --m-card:rgba(0,0,0,0.13); --m-card-inner:rgba(0,0,0,0.09); --m-card-ink:#111;
+    --m-meta:rgba(0,0,0,0.5); --m-meta-hot:rgba(0,0,0,0.6);
+    --m-tab:#e0dacc; --m-tab-ink:#111;
+    --m-inst:#161616; --m-inst-ink:#fff; --m-inst-ring:#000;
+    --m-trk:rgba(0,0,0,0.1); --m-trk-ring:rgba(0,0,0,0.5); --m-knob:#6a6a6a; --m-off-ink:#222;
+    --m-trk-on:#161616; --m-trk-on-ring:#000; --m-knob-on:#f2f2f2; --m-on-ink:#fff;
+    --m-lit-trk:#e9e9e9; --m-lit-trk-ring:rgba(0,0,0,0.5); --m-lit-knob:#6a6a6a; --m-lit-off-ink:#222;
+    --m-lit-trk-on:#161616; --m-lit-trk-on-ring:#000; --m-lit-knob-on:#f2f2f2; --m-lit-on-ink:#fff;
+    --m-hot-knob:#2a2a2a; --m-hot-knob-on:#111;
+  }
+
+  /* The window is moved by dragging anything that is not a control: the page's mousedown
+     handler asks the window to do it. */
+  #frame { position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+           overflow:hidden; }
+  /* Scaled with a transform, not with `zoom`: zoom lays every box out again at the new size and
+     rounds each edge to a pixel on its own, so a 3px gap could come out 2px on one side and 3px
+     on the other. A transform scales the finished picture, the same everywhere. */
+  .stage { position:relative; flex:none; width:1568px; height:906px; overflow:hidden;
+           transform-origin:center; font-family:var(--m-font); }
+  /* Resizing: a thin strip along each edge of the window, on top of everything. The window has
+     no frame to grab, so the page hands the drag to it. Gone while maximised. */
+  .edge { position:fixed; z-index:100; }
+  .edge.t, .edge.b { left:6px; right:6px; height:5px; cursor:ns-resize; }
+  .edge.l, .edge.r { top:6px; bottom:6px; width:5px; cursor:ew-resize; }
+  .edge.t { top:0; } .edge.b { bottom:0; } .edge.l { left:0; } .edge.r { right:0; }
+  .edge.tl, .edge.tr, .edge.bl, .edge.br { width:6px; height:6px; }
+  .edge.tl { top:0; left:0; cursor:nwse-resize; } .edge.br { bottom:0; right:0; cursor:nwse-resize; }
+  .edge.tr { top:0; right:0; cursor:nesw-resize; } .edge.bl { bottom:0; left:0; cursor:nesw-resize; }
+  body.maximized .edge { display:none; }
+  .stage > * { position:absolute; }
+
+  .backdrop { left:0; top:0; width:1568px; height:906px; background:var(--m-bg); color:var(--m-ink);
+              pointer-events:none; }
+  .backdrop svg { position:absolute; left:0; top:0; }
+  .backdrop .shape { fill:var(--m-shape); fill-opacity:var(--m-shape-a); }
+  .backdrop .echo { fill:none; stroke:currentColor; stroke-opacity:.55; stroke-width:1.5;
+                    vector-effect:non-scaling-stroke; }
+  .backdrop .rule { stroke:currentColor; stroke-opacity:.12; stroke-width:.6; vector-effect:non-scaling-stroke; }
+  .backdrop .mark { stroke:currentColor; stroke-opacity:.5; stroke-width:1; vector-effect:non-scaling-stroke; }
+  .backdrop .spine { stroke:currentColor; stroke-opacity:.2; stroke-width:.8; vector-effect:non-scaling-stroke; }
+  .backdrop text { font-family:var(--m-font); font-weight:700; font-size:9px; letter-spacing:2px;
+                   fill:currentColor; }
+
+  /* Square plastic: every button on the stage, and the mod cards. */
+  .glass { border:0; border-radius:0; font-family:var(--m-font); font-weight:700;
+           text-transform:uppercase; isolation:isolate;
+           transition:transform .35s cubic-bezier(.2,.8,.2,1), background .35s ease; }
+  .btn { cursor:pointer; background:var(--m-btn); color:var(--m-btn-ink); }
+  .btn:hover { transform:translateY(-2px); background:var(--m-hot); color:var(--m-hot-ink); }
+  .btn:active { transform:translateY(0); }
+  .btn:focus-visible { outline:2px solid var(--m-focus); outline-offset:4px; }
+  .btn svg { stroke:var(--m-btn-ink); }
+  .btn:hover svg { stroke:var(--m-hot-ink); }
+  /* Unavailable while something else runs: the button stays solid, only its text fades. */
+  .btn:disabled { cursor:default; transform:none; background:var(--m-btn);
+                  color:color-mix(in srgb, var(--m-btn-ink) 35%, var(--m-btn)); }
+  /* The header: a strip across the top of the stage in the buttons' colour, the window's own
+     buttons at its right end. Pressing the strip moves the window like the rest of the ground. */
+  .header { left:0; top:0; width:1568px; height:36px; background:var(--m-btn); }
+  .wc { top:0; width:46px; height:36px; display:flex; align-items:center; justify-content:center; padding:0;
+        background:transparent; }
+  .wc:hover, .wc:active { transform:none; }
+  /* Refresh: checks for updates again and puts the cards back in order. Turned on its corner, so
+     every transform it takes keeps the turn. While the check runs it is flat, but its arrows keep
+     going round instead of fading. */
+  .diamond { transform:rotate(45deg); }
+  .diamond:hover { transform:translateY(-2px) rotate(45deg); }
+  .diamond:active, .diamond:disabled { transform:rotate(45deg); }
+  .diamond svg, .diamond:hover svg { stroke:currentColor; }
+  .diamond.spin { color:var(--m-btn-ink); }
+  .diamond.spin svg { animation:refreshspin 1s linear infinite; }
+  @keyframes refreshspin { to { transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .diamond.spin svg { animation:none; } }
+  /* PLAY has a notch cut out of its bottom left corner, and PLAY WITHOUT MODS sits in it. */
+  .btn.play { clip-path:polygon(0 0, 100% 0, 100% 100%, 345px 100%, 337px 59px, 27px 59px, 0 86px); }
+  /* Both are cut to shape, and the cut takes anything drawn outside them - a focus ring outside
+     would simply not be there. Theirs is drawn inside, in the colour of their own text. */
+  .btn.play:focus-visible { outline:2px solid currentColor; outline-offset:-8px; }
+
+  .pwm { padding:0 0 0 10px; border:0; cursor:pointer; z-index:3; display:flex; align-items:center;
+         justify-content:center; font-family:var(--m-font); font-weight:700; font-size:11px;
+         letter-spacing:3.5px; text-transform:uppercase; background:var(--m-tab); color:var(--m-tab-ink);
+         transition:background .3s ease, color .3s ease; }
+  .pwm svg { position:absolute; left:0; top:0; pointer-events:none; overflow:visible; }
+  .pwm svg polygon { fill:none; stroke:currentColor; stroke-opacity:.6; stroke-width:1;
+                     vector-effect:non-scaling-stroke; }
+  .pwm span { position:relative; }
+  .pwm:hover { background:var(--m-hot); color:var(--m-hot-ink); }
+  .pwm:hover svg polygon { stroke-opacity:0; }
+  .pwm:focus-visible { outline:2px solid currentColor; outline-offset:-5px; }
+  .pwm:disabled { cursor:default; background:var(--m-tab);
+                  color:color-mix(in srgb, var(--m-tab-ink) 35%, var(--m-tab)); }
+

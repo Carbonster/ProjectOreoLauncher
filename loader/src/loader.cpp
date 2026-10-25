@@ -7,7 +7,7 @@
 // Two jobs, and nothing else:
 //   1. behave exactly like the real version.dll - every export is forwarded to
 //      C:\Windows\System32\version.dll, so the game cannot tell the difference;
-//   2. start ProjectOreo\ProjectOreoLauncher.exe and pause the game's startup until the player
+//   2. start OreoLauncher\OreoLauncher.exe and pause the game's startup until the player
 //      has decided (pressed PLAY, or closed the manager).
 //
 // The pause happens here in DllMain, before the game has a window or a renderer, so the player
@@ -38,13 +38,13 @@ std::wstring module_directory(HMODULE module) {
     return pos == std::wstring::npos ? std::wstring() : path.substr(0, pos);
 }
 
-// Appends one line to <Binaries>\ProjectOreo\logs\loader.log. The loader runs inside the game,
+// Appends one line to <Binaries>\OreoLauncher\logs\loader.log. The loader runs inside the game,
 // where nothing else can report a problem, so this file is the only way to see what happened.
 void log_line(const std::wstring& text) {
     std::wstring dir = module_directory((HMODULE)&__ImageBase);
     if (dir.empty()) return;
-    std::wstring logs = dir + L"\\ProjectOreo\\logs";
-    CreateDirectoryW((dir + L"\\ProjectOreo").c_str(), nullptr);
+    std::wstring logs = dir + L"\\OreoLauncher\\logs";
+    CreateDirectoryW((dir + L"\\OreoLauncher").c_str(), nullptr);
     CreateDirectoryW(logs.c_str(), nullptr);
 
     HANDLE file = CreateFileW((logs + L"\\loader.log").c_str(), FILE_APPEND_DATA, FILE_SHARE_READ, nullptr,
@@ -92,7 +92,7 @@ Fn forward(const char* name) {
 // the window). Runs directly inside DllMain: the game's startup is exactly what we are pausing.
 void start_launcher_and_wait() {
     std::wstring dir = module_directory((HMODULE)&__ImageBase);
-    std::wstring launcher = dir + L"\\ProjectOreo\\ProjectOreoLauncher.exe";
+    std::wstring launcher = dir + L"\\OreoLauncher\\OreoLauncher.exe";
 
     if (GetFileAttributesW(launcher.c_str()) == INVALID_FILE_ATTRIBUTES) {
         log_line(L"launcher not found at " + launcher + L" - the game continues without mods");
@@ -118,7 +118,7 @@ void start_launcher_and_wait() {
     si.cb = sizeof(si);
     PROCESS_INFORMATION pi{};
     if (!CreateProcessW(launcher.c_str(), &command[0], nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr,
-                        (dir + L"\\ProjectOreo").c_str(), &si, &pi)) {
+                        (dir + L"\\OreoLauncher").c_str(), &si, &pi)) {
         wchar_t code[32];
         swprintf(code, 32, L"%lu", GetLastError());
         log_line(L"could not start the launcher (Windows error " + std::wstring(code) +

@@ -1,0 +1,122 @@
+  /* ===================================================================================
+     High contrast (Settings -> High contrast), for players who see poorly. On either theme:
+     the ground goes pure black or white, nothing is see-through or blurred, every control and
+     card has a solid 2px edge, text is never faded, a control that cannot be used now is
+     dashed rather than dimmed away, the focus ring is thick and takes whichever of black and white
+     stands out from what it sits on, and the thin decorative lines go. The hover colour stays the theme's, deepened on the dark
+     one so white text on it is 8:1.
+     =================================================================================== */
+  body.hc {
+    --m-bg:#000; --m-ink:#fff; --m-shape-a:1; --m-dim:#a6a6a6;
+    --m-btn:#000; --m-btn-ink:#fff; --m-hot:#9e0a33; --m-hot-ink:#fff;
+    --m-card:#000; --m-card-inner:transparent; --m-card-ink:#fff;
+    --m-meta:#fff; --m-meta-hot:#fff;
+    --m-tab:#000; --m-tab-ink:#fff;
+    --m-inst:#000; --m-inst-ink:#fff; --m-inst-ring:#fff;
+    --m-trk:#000; --m-trk-ring:#fff; --m-knob:#fff; --m-off-ink:#fff;
+    --m-trk-on:#fff; --m-trk-on-ring:#fff; --m-knob-on:#000; --m-on-ink:#000;
+    --m-lit-trk:#000; --m-lit-trk-ring:#fff; --m-lit-knob:#fff; --m-lit-off-ink:#fff;
+    --m-lit-trk-on:#fff; --m-lit-trk-on-ring:#fff; --m-lit-knob-on:#000; --m-lit-on-ink:#000;
+    --m-hot-knob:#fff; --m-hot-knob-on:#fff;
+    --m-ground:#6e92bf; --m-ground-ink:#000;   /* the dark theme's blue: black on it is 6.5:1 */
+  }
+  body.hc.light {
+    --m-bg:#fff; --m-ink:#000; --m-dim:#595959;
+    --m-btn:#fff; --m-btn-ink:#000; --m-hot:#ffc43c; --m-hot-ink:#000;
+    --m-card:#fff; --m-card-ink:#000; --m-meta:#000; --m-meta-hot:#000;
+    --m-tab:#fff; --m-tab-ink:#000;
+    --m-inst:#fff; --m-inst-ink:#000; --m-inst-ring:#000;
+    --m-trk:#fff; --m-trk-ring:#000; --m-knob:#000; --m-off-ink:#000;
+    --m-trk-on:#000; --m-trk-on-ring:#000; --m-knob-on:#fff; --m-on-ink:#fff;
+    --m-lit-trk:#fff; --m-lit-trk-ring:#000; --m-lit-knob:#000; --m-lit-off-ink:#000;
+    --m-lit-trk-on:#000; --m-lit-trk-on-ring:#000; --m-lit-knob-on:#fff; --m-lit-on-ink:#fff;
+    --m-hot-knob:#000; --m-hot-knob-on:#000;
+    --m-ground:#b3140c; --m-ground-ink:#fff;   /* the light theme's red, deep enough for 7:1 white */
+  }
+  body.hc .glass { backdrop-filter:none; }
+  body.hc .backdrop .rule, body.hc .backdrop .mark, body.hc .backdrop .spine,
+  body.hc .backdrop .echo { display:none; }
+  body.hc .backdrop text { fill-opacity:1; }
+  /* The ground: one solid colour, the theme's own blue or red, with no black or white on it -
+     the cards and controls stand on it as they are. */
+  body.hc, body.hc .backdrop { background:var(--m-ground); }
+  body.hc .backdrop { color:var(--m-ground-ink); }
+  body.hc .backdrop .shape { display:none; }
+  /* The edges. An outline drawn inwards, so the hover and checked states, which all repaint the
+     fill and the thin ring, never take the edge away with them. */
+  body.hc .btn, body.hc .install, body.hc .track,
+  body.hc .rtip, body.hc .serr { outline:2px solid var(--m-ink); outline-offset:-2px; }
+  body.hc .opt, body.hc .req { border-bottom:2px solid var(--m-hot-ink); }
+  body.hc .card > svg.shape polygon, body.hc .pwm svg polygon { stroke-opacity:1; stroke-width:4; }
+  body.hc .card:hover:not(:has(.tog:hover, .install:hover)) > svg.shape polygon,
+  body.hc .pwm:hover svg polygon { stroke-opacity:1; }
+  body.hc .t-off { opacity:1; }
+  /* Unavailable right now: readable, dashed. */
+  body.hc .btn:disabled, body.hc .pwm:disabled, body.hc .install:disabled:not(.working) {
+      opacity:1; color:var(--m-dim); outline:2px dashed var(--m-dim); outline-offset:-2px; }
+  body.hc .tog:has(input:disabled) { opacity:1; }
+  body.hc .tog:has(input:disabled) .track { outline-style:dashed; outline-color:var(--m-dim); }
+  /* Focus: thick, in the ink of the surface around it - the ground, a card, or a sheet - so it is
+     never the low-contrast pair (yellow on the blue ground was 2.2:1, blue on the red 1.3:1). */
+  body.hc { --m-focus:var(--m-ground-ink); }
+  body.hc .card { --m-focus:var(--m-card-ink); }
+  body.hc dialog.mod { --m-focus:var(--m-hot-ink); }
+  body.hc .btn:focus-visible, body.hc .install:focus-visible, body.hc .pwm:focus-visible,
+  body.hc .req .rsub:focus-visible, body.hc dialog.mod .slink:focus-visible, body.hc .sfield:focus {
+      outline:3px solid var(--m-focus); outline-offset:3px; }
+  body.hc .tog input:focus-visible + .track { outline:3px solid var(--m-focus); outline-offset:3px; }
+  body.hc .btn.play:focus-visible { outline:3px solid currentColor; outline-offset:-9px; }
+  body.hc .pwm:focus-visible { outline:3px solid currentColor; outline-offset:-6px; }
+  body.hc .cards::-webkit-scrollbar { width:10px; }
+  body.hc .cards::-webkit-scrollbar-track { background:transparent; box-shadow:inset 0 0 0 1px var(--m-ground-ink); }
+  body.hc .cards::-webkit-scrollbar-thumb { background:var(--m-ground-ink); }
+  body.hc .sheet::-webkit-scrollbar-thumb { background:var(--m-hot-ink); }
+  /* The sheets. The page behind steps right back; a hovered control inverts, since the plain
+     controls already wear the ground's colours. */
+  body.hc dialog.mod::backdrop { background:color-mix(in srgb, var(--m-ground) 90%, transparent); }
+  body.hc dialog.mod .btn:hover, body.hc dialog.mod .install:hover {
+      background:var(--m-ink); color:var(--m-bg); box-shadow:none; }
+  body.hc dialog.mod .opt:hover { background:var(--m-bg); color:var(--m-ink); box-shadow:none; }
+  body.hc .mdesc { color:var(--m-hot-ink); }
+  body.hc .sfield { border-bottom:2px solid var(--m-hot-ink); }
+  body.hc .req .rsub, body.hc dialog.mod .slink { border-bottom:2px solid var(--m-hot-ink); }
+  body.hc .rtip { width:480px; }
+  body.hc .rtip p { font-size:13px; }
+  body.hc .rtip div { font-size:11px; color:var(--m-ink); }
+
+  /* Larger type. Everything under 14px grows by two or three pixels - as far as each place has
+     room for, with a little less letter-spacing where a line would otherwise run long. Names and
+     buttons that were already large stay as they are. */
+  body.hc .backdrop text { font-size:13px; letter-spacing:1.5px; }
+  body.hc #svcmods { transform:translateY(6px); }   /* the line above grew */
+  /* A card's second line stops short of its buttons and wraps instead of running under them. */
+  body.hc .card-meta { font-size:14px; letter-spacing:1.5px; line-height:16px; top:64px; right:226px; }
+  body.hc .card-name { top:32px; }
+  body.hc .t-on, body.hc .t-off { font-size:13px; letter-spacing:1.5px; }
+  body.hc .install { font-size:12px; letter-spacing:1.5px; }
+  body.hc .pwm { font-size:13px; letter-spacing:2.5px; }
+  body.hc .mmeta { font-size:14px; letter-spacing:1.5px; }
+  body.hc .mdesc { font-size:16px; }
+  body.hc .mdebug { font-size:14px; }
+  body.hc .mlabel { font-size:13px; letter-spacing:2px; }
+  body.hc .req { grid-template-columns:1fr 112px 112px 104px; }
+  body.hc .rname { font-size:15px; letter-spacing:1.5px; }
+  body.hc .rcap { font-size:12px; letter-spacing:1px; }
+  body.hc .req .rsub { font-size:12px; letter-spacing:1px; white-space:normal; }
+  body.hc .rval { font-size:15px; }
+  body.hc .rok { font-size:12px; letter-spacing:1px; }
+  body.hc .rnote { font-size:14px; }
+  body.hc .mbtn { font-size:14px; }
+  body.hc .snote, body.hc .serr { font-size:14px; }
+  body.hc .sfield { font-size:15px; }
+  body.hc .sbtn { font-size:12px; letter-spacing:1px; }
+  body.hc .opt > span:first-child { font-size:14px; letter-spacing:1.5px; }
+  body.hc dialog.mod .slink { font-size:13px; letter-spacing:1px; }
+  body.hc .sfoot { flex-wrap:wrap; margin-top:18px; }
+  /* Settings grows taller with its type: a little less air, and drawn slightly smaller, so the
+     whole of it still fits the window without scrolling. */
+  body.hc #settingsdlg { --sheet-k:calc(var(--k, 1) * 1.15); }
+  body.hc #settingsdlg .sheet { padding-top:30px; }
+  body.hc #settingsdlg .mlabel { margin:16px 0 6px; }
+  body.hc #settingsdlg .snote { margin-top:4px; }
+  body.hc #settingsdlg .opt { min-height:36px; }

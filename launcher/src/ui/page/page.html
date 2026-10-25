@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+/*PAGE_CSS*/</style></head>
+<body>
+<div class="edge t" data-edge="t"></div><div class="edge b" data-edge="b"></div>
+<div class="edge l" data-edge="l"></div><div class="edge r" data-edge="r"></div>
+<div class="edge tl" data-edge="tl"></div><div class="edge tr" data-edge="tr"></div>
+<div class="edge bl" data-edge="bl"></div><div class="edge br" data-edge="br"></div>
+<div id="frame">
+<div class="stage" id="stage">
+  <div class="backdrop" aria-hidden="true">
+    <svg width="1568" height="906" viewBox="0 0 1568 906">
+      <polygon class="shape" points="380,-80 1600,-80 1600,220 380,220"/>
+      <polygon class="shape" points="780,220 1090,220 830,990 520,990"/>
+      <polygon class="echo" points="406,-54 1626,-54 1626,246 406,246"/>
+      <polygon class="echo" points="806,246 1116,246 856,1016 546,1016"/>
+      <line class="rule" x1="0" y1="220" x2="1568" y2="220"/>
+      <line class="rule" x1="0" y1="500" x2="1568" y2="500"/>
+      <line class="rule" x1="0" y1="780" x2="1568" y2="780"/>
+      <line class="rule" x1="380" y1="0" x2="380" y2="906"/>
+      <line class="rule" x1="830" y1="0" x2="830" y2="906"/>
+      <line class="rule" x1="1090" y1="0" x2="1090" y2="906"/>
+      <line class="rule" x1="1530" y1="0" x2="1530" y2="906"/>
+      <line class="mark" x1="371" y1="220" x2="389" y2="220"/>
+      <line class="mark" x1="380" y1="211" x2="380" y2="229"/>
+      <line class="mark" x1="1081" y1="220" x2="1099" y2="220"/>
+      <line class="mark" x1="1090" y1="211" x2="1090" y2="229"/>
+      <line class="mark" x1="821" y1="900" x2="839" y2="900"/>
+      <line class="mark" x1="830" y1="891" x2="830" y2="909"/>
+      <text id="svcgame" x="40" y="60" fill-opacity="0.5">NO MAN'S SKY</text>
+      <text id="svcmods" x="40" y="76" fill-opacity="0.4">DETECTED MODS</text>
+      <text id="svcversion" x="40" y="876" fill-opacity="0.4">PROJECTOREO</text>
+      <text id="svcpython" x="1528" y="876" fill-opacity="0.4" text-anchor="end"></text>
+      <line class="spine" x1="40" y1="80" x2="40" y2="846"/>
+    </svg>
+  </div>
+
+  <!-- top: the header with the window buttons; below it on the right, theme and settings -->
+  <div class="header"></div>
+  <button class="glass btn wc" type="button" title="Minimize" aria-label="Minimize" style="left:1430px"
+      onclick="send('minimize')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke-width="2"
+      stroke-linecap="butt" style="shape-rendering:crispEdges"><line x1="0" y1="6" x2="12" y2="6"/></svg></button>
+  <button class="glass btn wc" type="button" title="Maximize" aria-label="Maximize" style="left:1476px"
+      onclick="send('maximize')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke-width="2"
+      stroke-linejoin="miter" style="shape-rendering:crispEdges"><rect x="1" y="1" width="10" height="10"/></svg></button>
+  <button class="glass btn wc" type="button" title="Close" aria-label="Close" style="left:1522px"
+      onclick="send('close')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke-width="2"
+      stroke-linecap="butt"><line x1="0.7" y1="0.7" x2="11.3" y2="11.3"/><line x1="11.3" y1="0.7" x2="0.7" y2="11.3"/></svg></button>
+  <label class="glass btn" title="Invert colours"
+      style="left:1214px;top:45px;width:44px;height:68px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0">
+    <input id="invsw" type="checkbox" checked onchange="setTheme(this.checked)" aria-label="Invert colours"
+        style="position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer">
+    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="2" width="16" height="16"
+        fill="none" stroke="currentColor" stroke-width="2"/><path d="M2 2 H18 V18 Z" fill="currentColor"/></svg>
+  </label>
+  <button class="glass btn" type="button" onclick="send('settings')"
+      style="left:1270px;top:45px;width:105px;height:68px;font-size:13px;letter-spacing:1.5px">SETTINGS</button>
+  <!-- Drawn square: the button's own turn makes it the diamond, with one arrow climbing its left
+       side to the top corner and the other running down its right side to the bottom one. -->
+  <button class="glass btn diamond" id="refresh" type="button" title="Refresh" aria-label="Refresh"
+      onclick="send('refresh')"
+      style="left:1396px;top:56px;width:38px;height:38px;padding:0;display:flex;align-items:center;justify-content:center">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke-width="2" stroke-linecap="square"
+        stroke-linejoin="miter" aria-hidden="true"><path
+        d="M9 17 H5 V4 M3 6 L5 4 L7 6 M13 5 H17 V18 M15 16 L17 18 L19 16"/></svg>
+  </button>
+
+  <div class="cards" id="cards"></div>
+
+  <!-- play bar -->
+  <button class="glass btn play" id="play" type="button" onclick="send('play')"
+      style="left:84px;top:745px;width:1316px;height:92px;font-size:26px;letter-spacing:38px;padding-left:38px">PLAY</button>
+  <button class="pwm" id="vanilla" type="button" aria-label="Play without mods" onclick="send('playvanilla')"
+      style="left:87px;top:807px;width:338px;height:27px;clip-path:polygon(0 27px, 27px 0, 330.7px 0, 337.3px 100%, 0 100%)">
+    <svg width="338" height="27" viewBox="0 0 338 27" aria-hidden="true"><polygon points="0.5,26.5 27,0.5 330.7,0.5 337.3,26.5"/></svg>
+    <span>PLAY WITHOUT MODS</span>
+  </button>
+</div>
+</div>
+
+  <!-- tabindex: opened by a click, the sheet takes the focus itself (openMod) rather than
+       lighting up the first button on it -->
+  <dialog id="moddlg" class="mod" aria-labelledby="modname" tabindex="-1">
+    <div class="sheet">
+      <div class="mhead"><div class="mod-pic" id="modpic"></div>
+        <div><div class="mname" id="modname"></div><div class="mmeta" id="modmeta"></div></div></div>
+      <div class="mdesc" id="moddesc"></div>
+      <div class="mdebug" id="moddebug"></div>
+      <div class="mlabel" id="modreqlabel">REQUIREMENTS</div>
+      <div id="modreqs"></div>
+      <div class="mfoot">
+        <button class="glass btn mbtn" type="button" onclick="send('openmodfolder', String(openedMod))">Open Mod Folder</button>
+        <button class="glass btn mbtn" type="button" onclick="el('moddlg').close()">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="dlg"><h3 id="dlgtitle"></h3><div id="dlgbody"></div>
+    <div style="margin-top:14px;text-align:right">
+      <button class="ghost" onclick="document.getElementById('dlg').close()">Close</button>
+    </div>
+  </dialog>
+
+  <!-- tabindex: opened by a click, the sheet takes the focus itself (showSettings) -->
+  <dialog id="settingsdlg" class="mod" aria-labelledby="settitle" tabindex="-1">
+    <div class="sheet">
+      <div class="shead"><div class="mname" id="settitle">Settings</div>
+        <button class="glass btn sbtn" id="launcherupd" type="button" hidden
+            onclick="send('updatelauncher')">Update launcher</button></div>
+      <div class="snote">Saved to config.ini. You do not need to edit that file by hand.</div>
+
+      <div class="mlabel">Game folder</div>
+      <div class="spath">
+        <input class="sfield" type="text" id="setGamePath" spellcheck="false" placeholder="No game folder detected">
+        <button class="glass btn sbtn" type="button" onclick="send('browsegame')">Browse...</button>
+        <button class="glass btn sbtn" type="button" onclick="useAutoGame()">Use auto-detected path</button>
+      </div>
+      <div class="snote" id="setGameAuto"></div>
+      <div class="serr" id="setGameErr"></div>
+
+      <div class="mlabel">Mods folder</div>
+      <div class="spath">
+        <input class="sfield" type="text" id="setModsPath" spellcheck="false" placeholder="No mods folder yet">
+        <button class="glass btn sbtn" type="button" onclick="send('browsemods')">Browse...</button>
+        <button class="glass btn sbtn" type="button" onclick="useDefaultMods()">Use default folder</button>
+      </div>
+      <div class="snote" id="setModsAuto"></div>
+      <div class="serr" id="setModsErr"></div>
+
+      <div class="mlabel">Launcher</div>
+      <label class="opt"><span>Always show Launcher</span><span class="tog"><input type="checkbox" id="setAlwaysShow" onchange="syncAlwaysShowNote()"><span class="track"><span class="t-on">ON</span><span class="t-off">OFF</span><span class="knob"></span></span></span></label>
+      <div class="snote" id="alwaysshownote" style="margin:6px 0 8px;display:none">
+        Off: the Launcher only opens when something needs you - an update, or a component
+        that is missing or failed. Otherwise the game starts straight away.</div>
+      <label class="opt"><span>Check for updates</span><span class="tog"><input type="checkbox" id="setCheckUpdates"><span class="track"><span class="t-on">ON</span><span class="t-off">OFF</span><span class="knob"></span></span></span></label>
+      <label class="opt"><span>High contrast</span><span class="tog"><input type="checkbox" id="setHighContrast"><span class="track"><span class="t-on">ON</span><span class="t-off">OFF</span><span class="knob"></span></span></span></label>
+      <label class="opt"><span>Debug hotkeys</span><span class="tog"><input type="checkbox" id="setDebugHotkeys"><span class="track"><span class="t-on">ON</span><span class="t-off">OFF</span><span class="knob"></span></span></span></label>
+      <label class="opt"><span>Verbose logging</span><span class="tog"><input type="checkbox" id="setVerbose"><span class="track"><span class="t-on">ON</span><span class="t-off">OFF</span><span class="knob"></span></span></span></label>
+
+      <div class="serr" id="setGeneralErr"></div>
+      <div class="sfoot">
+        <button class="slink" type="button" onclick="send('openconfig')">Open config.ini</button>
+        <!-- A second window on made-up mods, for trying every button's states. Not offered inside
+             that window itself. -->
+        <button class="slink" id="testbtn" type="button" onclick="send('testui')">Test version</button>
+        <span class="grow"></span>
+        <button class="glass btn sbtn" type="button" onclick="restoreDefaults()">Restore defaults</button>
+        <button class="glass btn sbtn" type="button" onclick="closeSettings()">Cancel</button>
+        <button class="glass btn sbtn" type="button" onclick="saveSettings()">Save</button>
+      </div>
+    </div>
+  </dialog>
+
+<script>
+/*PAGE_JS*/</script></body></html>

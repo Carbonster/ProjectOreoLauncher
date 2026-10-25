@@ -14,13 +14,13 @@
 #
 # Usage:
 #   powershell -ExecutionPolicy Bypass -File tools\fetch_python.ps1
-#   powershell -ExecutionPolicy Bypass -File tools\fetch_python.ps1 -Dest "D:\...\ProjectOreo\python"
+#   powershell -ExecutionPolicy Bypass -File tools\fetch_python.ps1 -Dest "D:\...\OreoLauncher\python"
 #   powershell -ExecutionPolicy Bypass -File tools\fetch_python.ps1 -WithPackages
 
 [CmdletBinding()]
 param(
-    # Where the runtime ends up. Default: <repo>\dist\ProjectOreo\python
-    [string]$Dest = (Join-Path $PSScriptRoot "..\dist\ProjectOreo\python"),
+    # Where the runtime ends up. Default: <repo>\dist\OreoLauncher\python
+    [string]$Dest = (Join-Path $PSScriptRoot "..\dist\OreoLauncher\python"),
 
     # Pinned build. ProjectOreo controls its Python version deliberately: pyMHF/NMSpy have
     # compiled dependencies (cyminhook, pymem, pyrun-injected) and 3.13 is what the mod stack

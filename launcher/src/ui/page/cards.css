@@ -1,0 +1,91 @@
+  /* ---- mod cards: two columns, a row every 152px. Four rows show; more scroll a row at a time,
+     with a thin square bar to the right of the cards. A press on the list never moves the
+     window (onControl in the script). ---- */
+  .cards { left:84px; top:141px; width:1336px; height:562px; overflow-y:auto; overflow-x:hidden;
+           scroll-snap-type:y mandatory; }
+  .cards::-webkit-scrollbar { width:10px; }
+  .cards::-webkit-scrollbar-track { background:color-mix(in srgb, var(--m-ink) 12%, transparent); }
+  .cards::-webkit-scrollbar-thumb { background:color-mix(in srgb, var(--m-ink) 55%, transparent); }
+  .cards::-webkit-scrollbar-thumb:hover { background:var(--m-hot); }
+  .slot { position:absolute; width:626px; height:106px; scroll-snap-align:start; }
+  .card { position:absolute; inset:0; cursor:pointer; color:var(--m-card-ink); background:var(--m-card);
+          backdrop-filter:blur(3px);
+          clip-path:polygon(0 0, 385px 0, 404px 14px, 100% 14px, 100% 100%, 0 100%); }
+  .card > svg.shape { position:absolute; left:0; top:0; width:100%; height:100%; overflow:visible;
+                      pointer-events:none; z-index:2; }
+  .card > svg.shape polygon { fill:none; stroke:currentColor; stroke-opacity:.55; stroke-width:1;
+                              vector-effect:non-scaling-stroke; stroke-linejoin:miter; }
+  .mod-pic { position:absolute; left:12px; top:12px; width:146px; height:82px;
+             background-size:cover; background-position:center; }
+  /* The second line sits level with the switch and the INSTALL / UPDATE button (their middle is
+     81px down), the name above it - the same with a picture or without. */
+  .card-name { position:absolute; left:24px; top:36px; font-size:20px; letter-spacing:2.5px; line-height:1.2; }
+  .card-meta { position:absolute; left:24px; top:74px; font-size:12px; letter-spacing:2px; line-height:14px;
+               color:var(--m-meta); }
+  /* The status bar: a solid strip above the name, the same grey in both themes. */
+  .card-status { position:absolute; left:24px; top:20px; width:75px; height:7px; background:#7a7a7a; }
+  .card.pic .card-name, .card.pic .card-meta, .card.pic .card-status { left:174px; }
+  .notch { position:absolute; left:391px; top:0; width:233px; height:21px; clip-path:polygon(0 0, 100% 0, 100% 100%, 21px 100%); }
+  /* The first card's SETTINGS: hidden until there is something behind it. */
+  .pwm.notch { display:none; }
+
+  /* A card under the pointer lights up - unless the pointer is on one of its own controls,
+     which then light up on their own. */
+  .card:hover:not(:has(.tog:hover, .install:hover)) { background:var(--m-hot); color:var(--m-hot-ink); }
+  .card:hover:not(:has(.tog:hover, .install:hover)) .card-meta { color:var(--m-meta-hot); }
+  .card:hover:not(:has(.tog:hover, .install:hover)) > svg.shape polygon { stroke-opacity:0; }
+  .card:hover:has(.tog:hover, .install:hover) { background:var(--m-card-inner); }
+
+  /* INSTALL / UPDATE: everything a mod needs, behind one button. */
+  .install { position:absolute; right:122px; bottom:12px; width:92px; height:26px; padding:0; border:0;
+             cursor:pointer; z-index:2; font-family:var(--m-font); font-weight:700; font-size:11px;
+             letter-spacing:2px; text-transform:uppercase; background:var(--m-inst); color:var(--m-inst-ink);
+             box-shadow:inset 0 0 0 1px var(--m-inst-ring); transition:background .3s ease, color .3s ease; }
+  .install:hover { background:var(--m-hot); color:var(--m-hot-ink); box-shadow:inset 0 0 0 1px var(--m-hot); }
+  .install:focus-visible { outline:2px solid #888; outline-offset:3px; }
+  .install:disabled { cursor:default; pointer-events:none; }
+  .install:disabled:not(.working) { opacity:.45; }
+  /* Busy: a static button cannot tell you whether pip is still working or has wedged, so the
+     dots run. CSS keeps them moving on its own - the page is only re-rendered when the state
+     changes, which it does not while a download is in progress. */
+  .dots i { display:inline-block; width:4px; height:4px; margin:0 2px; background:currentColor;
+            opacity:.25; animation:dotpulse 1.05s infinite; }
+  .dots i:nth-child(2) { animation-delay:.18s; }
+  .dots i:nth-child(3) { animation-delay:.36s; }
+  @keyframes dotpulse { 0%,60%,100% { opacity:.25; } 30% { opacity:1; } }
+  @media (prefers-reduced-motion: reduce) { .dots i { animation:none; opacity:.7; } }
+
+  /* ON / OFF */
+  .tog { position:absolute; right:15px; bottom:12px; display:block; width:97px; height:26px; cursor:pointer; }
+  .tog input { position:absolute; inset:0; width:100%; height:100%; margin:0; opacity:0; cursor:pointer; z-index:3; }
+  .tog:has(input:disabled) { opacity:.45; pointer-events:none; }
+  /* The knob glides across and eases in at both ends; the colours and the ON/OFF words fade
+     over the same stretch so the whole switch moves as one. */
+  .track { position:absolute; inset:0; overflow:hidden; background:var(--m-trk);
+           box-shadow:inset 0 0 0 1px var(--m-trk-ring);
+           transition:background .45s ease, box-shadow .45s ease; }
+  .knob { position:absolute; top:3px; left:3px; width:36px; height:20px; background:var(--m-knob);
+          transition:transform .45s cubic-bezier(.65,0,.35,1), background .45s ease; }
+  .t-on, .t-off { position:absolute; top:0; height:26px; line-height:26px; font-family:var(--m-font);
+                  font-weight:700; font-size:11px; letter-spacing:2px; transition:opacity .35s ease; }
+  .t-on { left:12px; opacity:0; color:var(--m-on-ink); }
+  .t-off { right:11px; opacity:.6; color:var(--m-off-ink); }
+  .tog input:checked + .track { background:var(--m-trk-on); box-shadow:inset 0 0 0 1px var(--m-trk-on-ring); }
+  .tog input:checked + .track .knob { transform:translateX(55px); background:var(--m-knob-on); }
+  .tog input:checked + .track .t-on { opacity:1; }
+  .tog input:checked + .track .t-off { opacity:0; }
+  .tog input:focus-visible + .track { outline:2px solid var(--m-focus); outline-offset:3px; }
+  .card:hover:not(:has(.tog:hover, .install:hover)) .track {
+      background:var(--m-lit-trk); box-shadow:inset 0 0 0 1px var(--m-lit-trk-ring); }
+  .card:hover:not(:has(.tog:hover, .install:hover)) .knob { background:var(--m-lit-knob); }
+  .card:hover:not(:has(.tog:hover, .install:hover)) .t-off { color:var(--m-lit-off-ink); }
+  .card:hover:not(:has(.tog:hover, .install:hover)) .tog input:checked + .track {
+      background:var(--m-lit-trk-on); box-shadow:inset 0 0 0 1px var(--m-lit-trk-on-ring); }
+  .card:hover:not(:has(.tog:hover, .install:hover)) .tog input:checked + .track .knob { background:var(--m-lit-knob-on); }
+  .card:hover:not(:has(.tog:hover, .install:hover)) .tog input:checked + .track .t-on { color:var(--m-lit-on-ink); }
+  .tog:hover .track, .tog:hover input:checked + .track {
+      background:var(--m-hot); box-shadow:inset 0 0 0 1px var(--m-hot); }
+  .tog:hover .knob { background:var(--m-hot-knob); }
+  .tog:hover input:checked + .track .knob { background:var(--m-hot-knob-on); }
+  .tog:hover .t-on, .tog:hover .t-off { color:var(--m-hot-ink); }
+

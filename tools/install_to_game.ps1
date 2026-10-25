@@ -1,7 +1,7 @@
 # install_to_game.ps1 - copies a built ProjectOreo into the game folder.
 #
 # Installs ONLY the folder:
-#     <No Man's Sky>\Binaries\ProjectOreo\
+#     <No Man's Sky>\Binaries\OreoLauncher\
 #
 # The loader itself (Binaries\version.dll) is NOT touched by default: it is installed by the
 # launcher's own Install button on the "ProjectOreo Loader" row - that is exactly the behaviour
@@ -20,8 +20,8 @@ param(
 $ErrorActionPreference = "Stop"
 
 $root = Resolve-Path (Join-Path $PSScriptRoot "..")
-$dist = Join-Path $root "dist\ProjectOreo"
-if (-not (Test-Path (Join-Path $dist "ProjectOreoLauncher.exe"))) {
+$dist = Join-Path $root "dist\OreoLauncher"
+if (-not (Test-Path (Join-Path $dist "OreoLauncher.exe"))) {
     throw "nothing staged yet - run tools\stage.ps1 -Build first"
 }
 
@@ -52,7 +52,7 @@ if (-not $GamePath -or -not (Test-Path (Join-Path $GamePath "Binaries\NMS.exe"))
 }
 
 $binaries = Join-Path $GamePath "Binaries"
-$target = Join-Path $binaries "ProjectOreo"
+$target = Join-Path $binaries "OreoLauncher"
 Write-Host "Game     : $GamePath"
 Write-Host "Target   : $target"
 
@@ -62,7 +62,7 @@ if (Get-Process -Name "NMS" -ErrorAction SilentlyContinue) {
 
 New-Item -ItemType Directory -Force -Path $target | Out-Null
 # config.ini/logs/cache stay where they are: only what was just built gets copied.
-Copy-Item (Join-Path $dist "ProjectOreoLauncher.exe") $target -Force
+Copy-Item (Join-Path $dist "OreoLauncher.exe") $target -Force
 New-Item -ItemType Directory -Force -Path (Join-Path $target "loader") | Out-Null
 Copy-Item (Join-Path $dist "loader\version.dll") (Join-Path $target "loader") -Force
 
@@ -87,4 +87,4 @@ if ($WithLoader) {
     Write-Host "  loader NOT installed - use the Install button in the launcher (that is the flow to test)"
 }
 
-Write-Host "Done. Run: `"$target\ProjectOreoLauncher.exe`" --check-only   (checks only, no window, no launch)"
+Write-Host "Done. Run: `"$target\OreoLauncher.exe`" --check-only   (checks only, no window, no launch)"

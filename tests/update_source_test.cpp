@@ -11,11 +11,12 @@
 #include <string>
 #include <vector>
 
-#include "core/approved_catalog.h"
-#include "core/component_update.h"
-#include "core/http.h"
-#include "core/release_manifest.h"
-#include "core/util.h"
+#include "updates/approved_catalog.h"
+#include "updates/component_update.h"
+#include "net/http.h"
+#include "updates/release_manifest.h"
+#include "system/text.h"
+#include "system/files.h"
 
 namespace {
 
@@ -195,7 +196,7 @@ void put32(std::string& out, unsigned value) {
 
 // A store-only zip: no compression, no data. zip_entries_are_safe only reads the central
 // directory, so the entries can be empty and the test stays readable.
-std::string make_zip(const std::vector<std::string>& names) {
+std::string make_zip(const std::vector<std::string>& names, unsigned unix_mode = 0) {
     std::string local, central;
     for (const std::string& name : names) {
         unsigned offset = (unsigned)local.size();
@@ -206,11 +207,11 @@ std::string make_zip(const std::vector<std::string>& names) {
         local += name;
 
         central += "PK";
-        put16(central, 20); put16(central, 20); put16(central, 0); put16(central, 0);
+        put16(central, unix_mode ? (3u << 8) | 20 : 20); put16(central, 20); put16(central, 0); put16(central, 0);
         put16(central, 0); put16(central, 0);
         put32(central, 0); put32(central, 0); put32(central, 0);
         put16(central, (unsigned)name.size()); put16(central, 0); put16(central, 0);
-        put16(central, 0); put16(central, 0); put32(central, 0); put32(central, offset);
+        put16(central, 0); put16(central, 0); put32(central, unix_mode << 16); put32(central, offset);
         central += name;
     }
     std::string out = local + central;
@@ -253,6 +254,15 @@ void an_archive_that_escapes_its_folder_is_refused() {
     }
 }
 
+void an_archive_holding_a_link_is_refused() {
+    std::string path = g_zip_dir + "\\link.zip";
+    oreo::write_file(path, make_zip({"fishing_mod/pictures"}, 0120777));
+    std::string offending;
+    expect(!oreo::zip_entries_are_safe(path, offending), "a symlink entry should be refused");
+    oreo::write_file(path, make_zip({"fishing_mod/mod.py"}, 0100644));
+    expect(oreo::zip_entries_are_safe(path, offending), "a plain file with unix permissions should be accepted");
+}
+
 void something_that_is_not_a_zip_is_refused() {
     std::string path = g_zip_dir + "\notazip.bin";
     oreo::write_file(path, "this is not an archive at all");
@@ -292,6 +302,7 @@ int main() {
 
     an_ordinary_mod_archive_is_accepted();
     an_archive_that_escapes_its_folder_is_refused();
+    an_archive_holding_a_link_is_refused();
     something_that_is_not_a_zip_is_refused();
 
     std::filesystem::remove_all(root, ec);

@@ -12,12 +12,13 @@
 #include <string>
 #include <vector>
 
-#include "core/app.h"
-#include "core/game_gate.h"
-#include "core/log.h"
-#include "core/process.h"
-#include "core/util.h"
-#include "ui/ui.h"
+#include "app/app.h"
+#include "game/game_gate.h"
+#include "system/log.h"
+#include "system/process.h"
+#include "system/text.h"
+#include "system/files.h"
+#include "ui/window.h"
 
 namespace {
 
@@ -39,6 +40,8 @@ Arguments parse_arguments() {
         std::string arg = oreo::to_lower(oreo::to_utf8(argv[i]));
         if (arg == "--from-loader") {
             args.mode = oreo::StartMode::FromLoader;
+        } else if (arg == "--test-ui") {
+            args.mode = oreo::StartMode::Test;
         } else if (arg == "--check-only" || arg == "--check") {
             args.check_only = true;
         } else if (arg == "--pid" && i + 1 < count) {
@@ -55,6 +58,25 @@ Arguments parse_arguments() {
 
 int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) {
     CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+
+    // The test version (Settings -> Test version): opened next to a running launcher, so it
+    // takes none of its locks - not the single-instance mutex, not the game gate - and only
+    // ever shows the window on made-up mods. One test window at a time.
+    if (parse_arguments().mode == oreo::StartMode::Test) {
+        HANDLE test_instance = CreateMutexW(nullptr, TRUE, L"Local\\ProjectOreoLauncherTest");
+        if (!(test_instance && GetLastError() == ERROR_ALREADY_EXISTS)) {
+            oreo::App app(oreo::StartMode::Test, 0);
+            app.init();
+            app.run_checks();
+            oreo::run_ui(app);
+            app.wait_for_workers();
+            oreo::Log::info("test version closed");
+            oreo::Log::shutdown();
+        }
+        if (test_instance) CloseHandle(test_instance);
+        CoUninitialize();
+        return 0;
+    }
 
     // Only one launcher at a time: the loader and an impatient double click must not both run
     // checks (and pip) against the same Python environment.
@@ -78,6 +100,19 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) {
     if (already_running) {
         oreo::Log::info("another launcher instance is already running - exiting");
         oreo::gate_release("another instance is in charge");
+        CoUninitialize();
+        return 0;
+    }
+
+    // PLAY WITHOUT MODS, pressed in a launcher the player opened by hand: that one asked Steam for
+    // the game, and this is the launcher the game's loader started on the way up. It lets the
+    // game go and stays out of the way - no checks, no window, no mods.
+    if (args.mode == oreo::StartMode::FromLoader && !args.check_only && app.take_start_without_mods()) {
+        oreo::Log::info("this start was asked for by PLAY WITHOUT MODS - releasing the game, no mods");
+        oreo::gate_release("PLAY WITHOUT MODS");
+        oreo::Log::info("ProjectOreo launcher exiting");
+        oreo::Log::shutdown();
+        if (single_instance) CloseHandle(single_instance);
         CoUninitialize();
         return 0;
     }
@@ -124,7 +159,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) {
                 // The log is shut by now, so the reason has to travel in the box itself.
                 std::wstring text =
                     L"ProjectOreo was updated but the new launcher could not be started.\n"
-                    L"Start it by hand from the ProjectOreo folder.\n\n" + oreo::to_wide(error);
+                    L"Start it by hand from the OreoLauncher folder.\n\n" + oreo::to_wide(error);
                 MessageBoxW(nullptr, text.c_str(), L"ProjectOreo", MB_OK | MB_ICONWARNING);
             }
             CoUninitialize();
