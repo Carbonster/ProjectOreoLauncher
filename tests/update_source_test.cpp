@@ -168,7 +168,7 @@ void pypi_components_have_no_manifest() {
 }
 
 void downloadable_components_have_a_manifest() {
-    for (const char* id : {"launcher", "runtime", "fishing_minigame"}) {
+    for (const char* id : {"launcher", "runtime", "fishing_minigame", "holster"}) {
         const oreo::ApprovedCatalogEntry* entry = oreo::find_approved(id);
         expect(entry != nullptr, "catalog entry should exist");
         if (entry) {

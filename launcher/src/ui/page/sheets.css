@@ -80,6 +80,10 @@
             border-bottom:1px solid color-mix(in srgb, var(--m-hot-ink) 28%, transparent); user-select:text; }
   .sfield:focus { border-bottom-color:var(--m-hot-ink); }
   .sfield::placeholder { color:var(--m-meta-hot); }
+  /* the same green as the dot on SETTINGS, so the button says why the dot is there */
+  /* baseline: the dot's bottom sits on the text's baseline, so its middle is the middle of the capitals */
+  .gdot { display:inline-block; width:8px; height:8px; margin-left:8px; border-radius:50%;
+          background:#2fd16b; vertical-align:baseline; }
   .sbtn { height:34px; padding:0 14px; font-size:11px; letter-spacing:1.5px; }
   /* A field's complaint: a chip of the ground, readable on either theme's sheet. */
   .serr { margin-top:8px; padding:6px 10px; width:fit-content; background:var(--m-bg); color:var(--m-ink);

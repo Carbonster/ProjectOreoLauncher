@@ -83,6 +83,10 @@
   .btn { cursor:pointer; background:var(--m-btn); color:var(--m-btn-ink); }
   .btn:hover { transform:translateY(-2px); background:var(--m-hot); color:var(--m-hot-ink); }
   .btn:active { transform:translateY(0); }
+  /* the green dot on SETTINGS: a newer launcher is out */
+  #settingsbtn.upd::after { content:""; position:absolute; top:9px; right:10px; width:10px; height:10px;
+                            border-radius:50%; background:#2fd16b; box-shadow:0 0 0 2px var(--m-btn); }
+  #settingsbtn.upd:hover::after { box-shadow:0 0 0 2px var(--m-hot); }
   .btn:focus-visible { outline:2px solid var(--m-focus); outline-offset:4px; }
   .btn svg { stroke:var(--m-btn-ink); }
   .btn:hover svg { stroke:var(--m-hot-ink); }

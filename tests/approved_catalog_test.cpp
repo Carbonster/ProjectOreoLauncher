@@ -12,7 +12,7 @@ bool starts_with(const std::string& value, const std::string& prefix) {
 
 int main() {
     const auto& catalog = oreo::approved_catalog();
-    assert(catalog.size() == 5);
+    assert(catalog.size() == 6);
     std::set<std::string> ids;
     for (const auto& entry : catalog) {
         assert(!entry.id.empty());
@@ -34,6 +34,8 @@ int main() {
     assert(nmspy && nmspy->package_name == "nmspy");
     assert(runtime && runtime->release_ready && !runtime->manifest_url.empty());
     assert(fishing && !fishing->manifest_url.empty());
+    const auto* holster = oreo::find_approved_mod("holster mod");
+    assert(holster && holster->id == "holster" && !holster->manifest_url.empty());
     assert(oreo::find_approved("random_user_mod") == nullptr);
     return 0;
 }

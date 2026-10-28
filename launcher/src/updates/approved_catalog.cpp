@@ -15,6 +15,8 @@ const char* kRuntimeManifest =
     "https://raw.githubusercontent.com/Carbonster/ProjectOreoRuntime/main/latest.json";
 const char* kFishingManifest =
     "https://raw.githubusercontent.com/Carbonster/Immersive-Fishing/main/latest.json";
+const char* kHolsterManifest =
+    "https://raw.githubusercontent.com/Carbonster/Holster-mod/main/latest.json";
 
 }  // namespace
 
@@ -33,6 +35,9 @@ const std::vector<ApprovedCatalogEntry>& approved_catalog() {
         {"fishing_minigame", "Fishing Minigame Mod", "Fishing gameplay overhaul",
          ApprovedSource::GitHubModArchive, "", "", "fishing_mod", "",
          "https://github.com/Carbonster/Immersive-Fishing", kFishingManifest, "", "", 0, true},
+        {"holster", "Holster Mod", "Multitools in body slots",
+         ApprovedSource::GitHubModArchive, "", "", "Holster mod", "",
+         "https://github.com/Carbonster/Holster-mod", kHolsterManifest, "", "", 0, true},
     };
     return entries;
 }

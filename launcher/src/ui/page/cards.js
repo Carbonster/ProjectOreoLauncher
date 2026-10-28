@@ -87,9 +87,10 @@
     el('refresh').classList.toggle('spin', state.refreshing);
     const upd = el('launcherupd'), updating = state.updatingLauncher;
     upd.hidden = !state.launcherUpdate && !updating;
+    el('settingsbtn').classList.toggle('upd', !!state.launcherUpdate);
     upd.disabled = busy;
     upd.title = state.launcherLatest ? "Update to " + state.launcherLatest : "";
-    upd.innerHTML = updating ? DOTS : "Update launcher";
+    upd.innerHTML = updating ? DOTS : 'Update launcher<span class="gdot"></span>';
     lastState = state;
     drawMod();
 
