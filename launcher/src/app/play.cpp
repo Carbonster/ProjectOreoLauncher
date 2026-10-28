@@ -54,8 +54,10 @@ LaunchResult App::play_blocking() {
     if (!framework_ready)
         Log::warn(std::string("play: framework incomplete - pyMHF ") + (pymhf_ready ? "installed" : "MISSING") +
                   ", NMSpy " + (nmspy_ready ? "installed" : "MISSING"));
+    const bool loader_installed = loader_->present() && !loader_->foreign();
     LaunchResult result = launch_->play(mods, loader_pid_, framework_ready,
-                                        [](const std::string& stage) { Log::info("play stage: " + stage); });
+                                        [](const std::string& stage) { Log::info("play stage: " + stage); },
+                                        loader_installed);
     Log::info("play: " + result.message);
     play_running_ = false;
     play_done_ = true;
@@ -89,6 +91,10 @@ void App::play_without_mods_async() {
         play_done_ = true;
     });
 }
+
+std::string App::game_exe() const { return game_->found() ? game_->exe_path() : ""; }
+
+std::string App::game_binaries_dir() const { return game_->binaries_dir(); }
 
 bool App::take_start_without_mods() { return LaunchService::take_start_without_mods(cfg_.oreo_dir); }
 

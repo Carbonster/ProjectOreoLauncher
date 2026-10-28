@@ -67,8 +67,15 @@ public:
     // `progress` is called with a short human sentence at every step, so the window can show
     // what is happening instead of freezing on "STARTING...".
     using ProgressFn = std::function<void(const std::string&)>;
+    // `loader_installed`: the game's loader starts a launcher of its own, and that one starts the
+    // mods. With no game running, PLAY then only starts the game: starting the mods here as well
+    // is two pyMHF in one game.
     LaunchResult play(const std::vector<ModInfo>& mods, unsigned long known_game_pid = 0,
-                      bool framework_ready = true, ProgressFn progress = nullptr);
+                      bool framework_ready = true, ProgressFn progress = nullptr,
+                      bool loader_installed = false);
+
+    // Starts NMS.exe itself, which needs neither Steam nor a store.
+    bool start_game_exe(std::string* error) const;
 
     // PLAY WITHOUT MODS when nothing is holding the game: starts it through Steam with no pyMHF.
     // The game's own loader then starts a launcher of its own, which would start the mods; the

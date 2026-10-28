@@ -153,9 +153,18 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) {
                 single_instance = nullptr;
             }
 
+            // The game this launcher was holding has just been stopped. Starting the game again
+            // puts the player back where they were: its loader opens the launcher.
             std::string error;
-            if (!oreo::run_detached(restart, {}, oreo::EnvMap(), oreo::path_dir(restart), nullptr,
-                                    &error, false)) {
+            bool started = false;
+            const std::string game_exe = app.game_exe();
+            if (!game_exe.empty()) {
+                for (int i = 0; i < 75 && oreo::find_process_id("NMS.exe"); ++i) Sleep(200);
+                started = oreo::run_detached(game_exe, {}, oreo::EnvMap(), app.game_binaries_dir(), nullptr,
+                                             &error, true);
+            }
+            if (!started && !oreo::run_detached(restart, {}, oreo::EnvMap(), oreo::path_dir(restart), nullptr,
+                                                &error, false)) {
                 // The log is shut by now, so the reason has to travel in the box itself.
                 std::wstring text =
                     L"ProjectOreo was updated but the new launcher could not be started.\n"

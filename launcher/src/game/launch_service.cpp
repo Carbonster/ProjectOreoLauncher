@@ -175,6 +175,15 @@ bool LaunchService::start_game_via_steam(std::string* error) const {
     return false;
 }
 
+bool LaunchService::start_game_exe(std::string* error) const {
+    if (!game_.found()) {
+        if (error) *error = "The game folder is unknown.";
+        return false;
+    }
+    Log::info("starting the game: " + game_.exe_path());
+    return run_detached(game_.exe_path(), {}, EnvMap(), game_.binaries_dir(), nullptr, error, true);
+}
+
 LaunchResult LaunchService::start_without_mods() {
     LaunchResult result;
     if (find_process_id("NMS.exe")) {
@@ -289,7 +298,7 @@ EnvMap LaunchService::launch_env(const NmspyLaunchPlan& plan) const {
 }
 
 LaunchResult LaunchService::play(const std::vector<ModInfo>& mods, unsigned long known_game_pid,
-                                 bool framework_ready, ProgressFn progress) {
+                                 bool framework_ready, ProgressFn progress, bool loader_installed) {
     LaunchResult result;
     auto say = [&progress](const std::string& text) {
         if (progress) progress(text);
@@ -366,6 +375,17 @@ LaunchResult LaunchService::play(const std::vector<ModInfo>& mods, unsigned long
         result.game_started = started && !game_running;
         result.message = plan.error + (started ? " The game is starting without mods." : "");
         Log::error("play: " + plan.error);
+        return result;
+    }
+
+    if (!game_running && loader_installed) {
+        std::string error;
+        const bool started = start_game_exe(&error);
+        result.ok = started;
+        result.game_started = started;
+        result.message = started ? "No Man's Sky is starting. The launcher the game opens will start the mods."
+                                 : "No Man's Sky could not be started. " + error;
+        Log::info("play: " + result.message);
         return result;
     }
 

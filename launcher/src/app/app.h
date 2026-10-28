@@ -88,6 +88,8 @@ public:
     SettingsValues settings_values() const;
     // What detection found, for "Use auto-detected path" / "Use default folder".
     std::string detected_game_path() const;
+    std::string game_exe() const;
+    std::string game_binaries_dir() const;
     std::string detected_mods_path() const;
     // Validates and saves, then detects and scans again so new folders apply at once. On
     // failure fills `errors` per field or `error`, and changes nothing.
