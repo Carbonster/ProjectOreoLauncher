@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(project_oreo LANGUAGES CXX)
 
 # One version number for the whole product: the launcher exe and the loader dll ship together.
-set(PROJECTOREO_VERSION "0.2.4")
+set(PROJECTOREO_VERSION "0.2.5")
 string(REPLACE "." "," PROJECTOREO_VERSION_COMMA "${PROJECTOREO_VERSION}")
 set(PROJECTOREO_VERSION_COMMA "${PROJECTOREO_VERSION_COMMA},0")
 

@@ -97,6 +97,13 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) {
     // has to let it go again.
     oreo::gate_init(args.mode == oreo::StartMode::FromLoader ? args.pid : 0);
 
+    // The launcher that has just started the game is still closing when the game's loader starts
+    // this one; giving up at once would let the game go without mods.
+    if (already_running && args.mode == oreo::StartMode::FromLoader) {
+        const DWORD waited = WaitForSingleObject(single_instance, 3000);
+        if (waited == WAIT_OBJECT_0 || waited == WAIT_ABANDONED) already_running = false;
+    }
+
     if (already_running) {
         oreo::Log::info("another launcher instance is already running - exiting");
         oreo::gate_release("another instance is in charge");
